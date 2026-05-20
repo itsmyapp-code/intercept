@@ -32,8 +32,20 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#18181b" />
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-black">
         {children}
+        <footer className="w-full mt-12 border-t border-neutral-900 bg-black py-8 px-4 flex flex-col items-center text-zinc-400 text-xs">
+          <div className="flex items-center gap-2 mb-2">
+            <img src="/itsmyapp_logo.png" alt="ItsMyApp Logo" className="w-6 h-6" />
+            <span>Intercept is Powered by <a href="https://itsmyapp.co.uk" className="underline">ItsMyApp.co.uk</a> | All rights reserved | © 2026</span>
+          </div>
+          <nav className="flex gap-4">
+            <a href="/terms" className="underline">Terms</a>
+            <a href="/privacy" className="underline">Privacy</a>
+            <a href="/cookies" className="underline">Cookies</a>
+            <a href="/accessibility" className="underline">Accessibility</a>
+          </nav>
+        </footer>
         <script dangerouslySetInnerHTML={{
           __html: `if ('serviceWorker' in navigator) { window.addEventListener('load', function() { navigator.serviceWorker.register('/service-worker.js'); }); }`
         }} />
