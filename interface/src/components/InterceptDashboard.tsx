@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Power } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Power, Volume2, VolumeX } from "lucide-react";
 import HamburgerMenu from "./HamburgerMenu";
 import {
   loadState,
@@ -17,6 +17,15 @@ export default function InterceptDashboard() {
   const [state, setState] = useState<InterceptState | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [newTimeInput, setNewTimeInput] = useState("12:00");
+  const [isMuted, setIsMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
+  };
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -118,15 +127,29 @@ export default function InterceptDashboard() {
 
       {/* Hero: Large centered logo + status */}
       <div className="flex-1 flex flex-col items-center justify-center gap-8 py-12 px-4">
-        {/* Logo — full-width on mobile, capped at 280px on desktop */}
-        <video
-          src="/Intercept.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-52 h-52 sm:w-64 sm:h-64 md:w-72 md:h-72 object-contain border-2 border-zinc-800 p-2"
-        />
+        {/* Video logo with sound toggle */}
+        <div className="relative">
+          <video
+            ref={videoRef}
+            src="/Intercept.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-52 h-52 sm:w-64 sm:h-64 md:w-72 md:h-72 object-contain border-2 border-zinc-800 p-2"
+          />
+          <button
+            onClick={toggleMute}
+            className={`absolute bottom-4 right-4 p-2 border transition-all ${
+              isMuted
+                ? "border-zinc-700 bg-black/70 text-zinc-500 hover:text-white hover:border-zinc-500"
+                : "border-[#ff5500] bg-[#ff5500]/20 text-[#ff5500] hover:bg-[#ff5500]/30"
+            }`}
+            aria-label={isMuted ? "Unmute video" : "Mute video"}
+          >
+            {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+          </button>
+        </div>
 
         {/* App name */}
         <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-none text-center">
