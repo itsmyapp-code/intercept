@@ -136,7 +136,7 @@ export default function InterceptDashboard() {
             loop
             muted
             playsInline
-            className="w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 object-contain"
+            className="w-72 sm:w-80 md:w-96 max-w-full h-auto object-contain"
           />
           <button
             onClick={toggleMute}
