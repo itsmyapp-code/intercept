@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Mail, MessageCircle, MessageSquare, Smartphone } from "lucide-react";
+import { Mail, MessageCircle, MessageSquare, Smartphone, Phone } from "lucide-react";
 import {
   APPS,
   loadState,
@@ -18,6 +18,8 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   messenger: MessageSquare,
   sms: Smartphone,
   gmail: Mail,
+  calls_sim1: Phone,
+  calls_sim2: Phone,
 };
 
 export default function AppsPage() {

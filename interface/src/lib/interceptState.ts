@@ -6,6 +6,8 @@ export const APPS = [
   { key: "messenger", name: "Messenger", package: "com.facebook.orca", iconColor: "text-violet-500" },
   { key: "sms", name: "Text Messages", package: "com.google.android.apps.messaging", iconColor: "text-sky-500" },
   { key: "gmail", name: "Gmail", package: "com.google.android.gm", iconColor: "text-red-500" },
+  { key: "calls_sim1", name: "Calls (SIM 1)", package: "android.telecom.sim1", iconColor: "text-amber-500" },
+  { key: "calls_sim2", name: "Calls (SIM 2)", package: "android.telecom.sim2", iconColor: "text-teal-500" },
 ] as const;
 
 export type AppKey = typeof APPS[number]["key"];
@@ -46,6 +48,8 @@ export const DEFAULT_CUSTOMISATIONS: Record<AppKey, AppCustomisation> = {
   messenger: { mode: "POSTBOX" },
   sms: { mode: "ALWAYS_ALLOW" },
   gmail: { mode: "POSTBOX" },
+  calls_sim1: { mode: "ALWAYS_ALLOW" },
+  calls_sim2: { mode: "ALWAYS_ALLOW" },
 };
 
 export const DEFAULT_DELIVERY_TIMES: DeliveryTime[] = [
