@@ -40,5 +40,14 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Android / Gradle
+.gradle/
+build/
+**/build/
+**/local.properties
+.cxx/
+*.apk
+*.aar
+
 .vercel
 .env*.local

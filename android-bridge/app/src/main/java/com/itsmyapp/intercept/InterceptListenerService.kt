@@ -186,13 +186,6 @@ class InterceptListenerService : NotificationListenerService() {
         registerActiveSimSubscriptions()
     }
 
-    /**
-     * Queries SubscriptionManager for all active SIM cards and upserts a SimRule
-     * row for each one. If a SIM is not yet in the database it defaults to ALWAYS_ALLOW
-     * so existing call behaviour is unchanged until the user configures it.
-     *
-     * Requires READ_PHONE_STATE permission at runtime.
-     */
     private fun registerActiveSimSubscriptions() {
         try {
             val subscriptionManager =
@@ -206,7 +199,6 @@ class InterceptListenerService : NotificationListenerService() {
                 activeSims.forEach { info ->
                     val existing = simRuleDao.getSimRule(info.subscriptionId)
                     if (existing == null) {
-                        // First time we see this SIM — register with default ALWAYS_ALLOW rule
                         val simRule = SimRule(
                             subscriptionId = info.subscriptionId,
                             simSlot        = info.simSlotIndex,
@@ -234,6 +226,14 @@ class InterceptListenerService : NotificationListenerService() {
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         val appPackage = sbn.packageName
         if (appPackage == this.packageName) return
+
+        // 1. Check if the engine is engaged
+        val sharedPrefs = applicationContext.getSharedPreferences("InterceptPrefs", Context.MODE_PRIVATE)
+        val engineEngaged = sharedPrefs.getBoolean("engine_engaged", true)
+        if (!engineEngaged) {
+            Log.d("InterceptService", "Engine is disengaged. Allowing notification from $appPackage")
+            return
+        }
 
         val extras   = sbn.notification.extras
         val title    = extras.getCharSequence("android.title")?.toString()
@@ -280,31 +280,28 @@ class InterceptListenerService : NotificationListenerService() {
 // Call Screening Service (Android 7+)
 // ─────────────────────────────────────────────
 
-/**
- * InterceptCallScreeningService evaluates each inbound call against the per-SIM
- * routing rule stored in Room and either allows, silences, or rejects the call.
- *
- * Supported call rules (matching notification rules):
- *   ALWAYS_ALLOW  → pass the call through unchanged
- *   ALWAYS_BLOCK  → reject the call silently (caller hears busy/disconnected)
- *   POSTBOX       → silence the ringer; log to Vault; caller goes to voicemail
- *
- * Registration: Declare this service in AndroidManifest.xml with
- *   android:permission="android.permission.BIND_SCREENING_SERVICE"
- *   and add  <action android:name="android.telecom.CallScreeningService"/>
- *   in its <intent-filter>.
- *
- * The user must also set Intercept as the default Call Screening app in
- * Phone → Settings → Caller ID & Spam (device-dependent).
- */
 class InterceptCallScreeningService : CallScreeningService() {
 
     override fun onScreenCall(callDetails: Call.Details) {
+        val callerNumber = callDetails.handle?.schemeSpecificPart ?: "Unknown"
+
+        // 1. Check if the engine is engaged
+        val sharedPrefs = applicationContext.getSharedPreferences("InterceptPrefs", Context.MODE_PRIVATE)
+        val engineEngaged = sharedPrefs.getBoolean("engine_engaged", true)
+        if (!engineEngaged) {
+            Log.i("InterceptCallScreening", "Engine is disengaged. Allowing call from $callerNumber")
+            val response = CallResponse.Builder()
+                .setDisallowCall(false)
+                .setSilenceCall(false)
+                .build()
+            respondToCall(callDetails, response)
+            return
+        }
+
         val database    = InterceptDatabase.getDatabase(applicationContext)
         val simRuleDao  = database.simRuleDao()
         val alertDao    = database.blockedAlertDao()
 
-        // Identify which SIM account received the call
         val phoneAccountHandle: PhoneAccountHandle? = callDetails.accountHandle
         val subscriptionId = resolveSubscriptionId(phoneAccountHandle)
 
@@ -314,18 +311,17 @@ class InterceptCallScreeningService : CallScreeningService() {
             } else null
 
             val callRule = simRule?.callRule ?: "ALWAYS_ALLOW"
-            val callerNumber = callDetails.handle?.schemeSpecificPart ?: "Unknown"
             val simLabel     = simRule?.displayName ?: "Unknown SIM"
+            val targetAppPackage = if (simRule?.simSlot == 1) "android.telecom.sim2" else "android.telecom.sim1"
 
             Log.i("InterceptCallScreening",
                 "Inbound call on $simLabel (sub=$subscriptionId) from $callerNumber → rule=$callRule")
 
             val response = when (callRule) {
                 "ALWAYS_BLOCK" -> {
-                    // Silently reject — caller receives network busy/disconnected tone
                     alertDao.insertAlert(
                         BlockedAlert(
-                            appPackage = "android.telecom.call",
+                            appPackage = targetAppPackage,
                             title      = "Blocked Call – $simLabel",
                             textBody   = "From: $callerNumber",
                             timestamp  = System.currentTimeMillis(),
@@ -339,10 +335,9 @@ class InterceptCallScreeningService : CallScreeningService() {
                         .build()
                 }
                 "POSTBOX" -> {
-                    // Silence the ringer and send to voicemail; log in Vault
                     alertDao.insertAlert(
                         BlockedAlert(
-                            appPackage = "android.telecom.call",
+                            appPackage = targetAppPackage,
                             title      = "Postbox Call – $simLabel",
                             textBody   = "From: $callerNumber",
                             timestamp  = System.currentTimeMillis(),
@@ -356,7 +351,6 @@ class InterceptCallScreeningService : CallScreeningService() {
                         .build()
                 }
                 else -> {
-                    // ALWAYS_ALLOW — let the call ring normally
                     CallResponse.Builder()
                         .setDisallowCall(false)
                         .setSilenceCall(false)
@@ -368,10 +362,6 @@ class InterceptCallScreeningService : CallScreeningService() {
         }.start()
     }
 
-    /**
-     * Resolves the Android SubscriptionManager subscriptionId from a PhoneAccountHandle.
-     * Returns null if the mapping cannot be determined (e.g. no READ_PHONE_STATE permission).
-     */
     private fun resolveSubscriptionId(handle: PhoneAccountHandle?): Int? {
         if (handle == null) return null
         return try {
@@ -379,7 +369,6 @@ class InterceptCallScreeningService : CallScreeningService() {
             subscriptionManager
                 ?.activeSubscriptionInfoList
                 ?.firstOrNull { info ->
-                    // PhoneAccountHandle id is typically the iccid or slot string
                     info.iccId == handle.id || info.simSlotIndex.toString() == handle.id
                 }
                 ?.subscriptionId

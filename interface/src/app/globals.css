@@ -20,3 +20,93 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
+
+@keyframes chevron-one {
+  0% {
+    transform: translateX(-12px);
+    opacity: 0;
+  }
+  30% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes chevron-two {
+  0% {
+    transform: translateX(-16px);
+    opacity: 0;
+  }
+  25% {
+    transform: translateX(-16px);
+    opacity: 0;
+  }
+  55% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bar-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px rgba(255, 85, 0, 0.5));
+    opacity: 0.85;
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(255, 85, 0, 1));
+    opacity: 1;
+  }
+}
+
+@keyframes ambient-glow {
+  0%, 100% {
+    transform: scale(1) translate(0px, 0px);
+    opacity: 0.3;
+  }
+  33% {
+    transform: scale(1.08) translate(10px, -10px);
+    opacity: 0.45;
+  }
+  66% {
+    transform: scale(0.95) translate(-10px, 10px);
+    opacity: 0.35;
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-chevron-one {
+  animation: chevron-one 2.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.animate-chevron-two {
+  animation: chevron-two 2.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.animate-bar-glow {
+  animation: bar-glow 1.8s ease-in-out infinite;
+}
+
+.dynamic-glow {
+  animation: ambient-glow 8s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+

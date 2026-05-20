@@ -68,6 +68,28 @@ export function loadState(): InterceptState {
       interceptedAlerts: [],
     };
   }
+  // Try loading from Android native bridge if available
+  if ((window as any).InterceptAndroid) {
+    try {
+      const bridgeStateJson = (window as any).InterceptAndroid.loadState();
+      if (bridgeStateJson) {
+        const parsed = JSON.parse(bridgeStateJson);
+        const mergedCustomisations: Record<AppKey, AppCustomisation> = {
+          ...DEFAULT_CUSTOMISATIONS,
+          ...(parsed.appCustomisations || {}),
+        };
+        return {
+          engineEngaged: typeof parsed.engineEngaged === "boolean" ? parsed.engineEngaged : true,
+          appCustomisations: mergedCustomisations,
+          deliveryTimes: parsed.deliveryTimes || DEFAULT_DELIVERY_TIMES,
+          interceptedAlerts: parsed.interceptedAlerts || [],
+        };
+      }
+    } catch (err) {
+      console.error("Error loading state from Android native bridge:", err);
+    }
+  }
+
   try {
     const cached = window.localStorage.getItem(LOCAL_STORAGE_KEY);
     if (cached) {
@@ -86,7 +108,7 @@ export function loadState(): InterceptState {
       };
     }
   } catch (err) {
-    console.error("Error loading state:", err);
+    console.error("Error loading state from localStorage:", err);
   }
   return {
     engineEngaged: true,
@@ -98,7 +120,17 @@ export function loadState(): InterceptState {
 
 export function saveState(state: InterceptState): void {
   if (typeof window === "undefined") return;
+  // Always save to localStorage as fallback
   window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+
+  // Sync to native Android database if running inside the Android wrapper App
+  if ((window as any).InterceptAndroid) {
+    try {
+      (window as any).InterceptAndroid.saveState(JSON.stringify(state));
+    } catch (err) {
+      console.error("Error saving state via Android native bridge:", err);
+    }
+  }
 }
 
 export function getNextDeliveryTime(deliveryTimes: DeliveryTime[]): string {
