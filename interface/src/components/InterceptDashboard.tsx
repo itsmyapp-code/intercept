@@ -119,10 +119,13 @@ export default function InterceptDashboard() {
       {/* Hero: Large centered logo + status */}
       <div className="flex-1 flex flex-col items-center justify-center gap-8 py-12 px-4">
         {/* Logo — full-width on mobile, capped at 280px on desktop */}
-        <img
-          src="/Intercept-logo.png"
+        <video
+          src="/Intercept.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
           className="w-52 h-52 sm:w-64 sm:h-64 md:w-72 md:h-72 object-contain border-2 border-zinc-800 p-2"
-          alt="Intercept Logo"
         />
 
         {/* App name */}
