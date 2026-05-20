@@ -77,35 +77,7 @@ const DEFAULT_DELIVERY_TIMES: DeliveryTime[] = [
   { id: "dt-4", hour: 21, minute: 0, isEnabled: true },
 ];
 
-const INITIAL_VAULT_ITEMS: InterceptedAlert[] = [
-  {
-    id: "alert-1",
-    appKey: "outlook",
-    title: "Project Director",
-    textBody: "Please confirm customisation specs by tomorrow morning.",
-    timestamp: Date.now() - 1000 * 60 * 15,
-    isReleased: false,
-    isPostboxBatch: true
-  },
-  {
-    id: "alert-2",
-    appKey: "gmail",
-    title: "System Log Daemon",
-    textBody: "Prioritised queue processing has completed successfully.",
-    timestamp: Date.now() - 1000 * 60 * 38,
-    isReleased: false,
-    isPostboxBatch: true
-  },
-  {
-    id: "alert-3",
-    appKey: "messenger",
-    title: "David Miller",
-    textBody: "Lunch plans synchronised for Friday.",
-    timestamp: Date.now() - 1000 * 60 * 95,
-    isReleased: true,
-    isPostboxBatch: false
-  }
-];
+const INITIAL_VAULT_ITEMS: InterceptedAlert[] = [];
 
 const LOCAL_STORAGE_KEY = "intercept_postbox_dashboard_state";
 
@@ -396,7 +368,7 @@ export default function InterceptDashboard() {
         <div className="flex items-center gap-4">
           <img
             src="/Intercept-logo.png"
-            className="w-20 h-20 sm:w-28 sm:h-28 flex-shrink-0 border border-zinc-800 object-cover"
+            className="w-28 h-28 sm:w-36 sm:h-36 flex-shrink-0 border border-zinc-800 object-cover"
             alt="Intercept Logo"
           />
           <div>
