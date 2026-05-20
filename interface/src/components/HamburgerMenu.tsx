@@ -12,14 +12,10 @@ import {
   HelpCircle,
   BookOpen,
   LayoutDashboard,
+  SlidersHorizontal,
+  Archive,
 } from "lucide-react";
-
-interface DeliveryTime {
-  id: string;
-  hour: number;
-  minute: number;
-  isEnabled: boolean;
-}
+import type { DeliveryTime } from "../lib/interceptState";
 
 interface HamburgerMenuProps {
   engineEngaged: boolean;
@@ -59,10 +55,10 @@ export default function HamburgerMenu({
         <Menu className="w-6 h-6" />
       </button>
 
-      {/* Backdrop overlay */}
+      {/* Backdrop */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 menu-backdrop-enter"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
           onClick={() => setOpen(false)}
         />
       )}
@@ -94,47 +90,37 @@ export default function HamburgerMenu({
           </button>
         </div>
 
-        {/* Navigation links */}
+        {/* Navigation */}
         <nav className="flex flex-col p-4 gap-1">
-          <Link
-            href="/"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider text-zinc-300 hover:text-[#ff5500] hover:bg-[#ff5500]/5 border border-transparent hover:border-[#ff5500]/20 transition-all"
-          >
-            <LayoutDashboard className="w-4.5 h-4.5" />
-            Dashboard
-          </Link>
-          <Link
-            href="/help"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider text-zinc-300 hover:text-[#ff5500] hover:bg-[#ff5500]/5 border border-transparent hover:border-[#ff5500]/20 transition-all"
-          >
-            <HelpCircle className="w-4.5 h-4.5" />
-            Help
-          </Link>
-          <Link
-            href="/user-guide"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider text-zinc-300 hover:text-[#ff5500] hover:bg-[#ff5500]/5 border border-transparent hover:border-[#ff5500]/20 transition-all"
-          >
-            <BookOpen className="w-4.5 h-4.5" />
-            User Guide
-          </Link>
+          {[
+            { href: "/", label: "Dashboard", icon: LayoutDashboard },
+            { href: "/apps", label: "App Rules", icon: SlidersHorizontal },
+            { href: "/vault", label: "The Vault", icon: Archive },
+            { href: "/help", label: "Help", icon: HelpCircle },
+            { href: "/user-guide", label: "User Guide", icon: BookOpen },
+          ].map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider text-zinc-300 hover:text-[#ff5500] hover:bg-[#ff5500]/5 border border-transparent hover:border-[#ff5500]/20 transition-all"
+            >
+              <Icon className="w-4.5 h-4.5" />
+              {label}
+            </Link>
+          ))}
         </nav>
 
-        {/* Divider */}
         <div className="mx-4 border-t border-zinc-800" />
 
         {/* Engine Switch */}
         <div className="p-4">
-          <div className="border border-zinc-800 bg-black p-4 space-y-3">
+          <div className="border border-zinc-800 bg-black p-4">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest block">
-                  Master Engine
-                </span>
+                <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest block">Master Engine</span>
                 <span className="text-base font-bold uppercase tracking-tight mt-0.5 block">
-                  {engineEngaged ? "ENGAGED" : "BYPASSED"}
+                  {engineEngaged ? "ENGAGED" : "DISABLED"}
                 </span>
               </div>
               <button
@@ -142,9 +128,8 @@ export default function HamburgerMenu({
                 className={`p-3 transition-all border ${
                   engineEngaged
                     ? "bg-[#ff5500] text-white border-[#ff5500] hover:bg-[#ff6b00]"
-                    : "bg-black text-zinc-500 border-zinc-800 hover:border-zinc-700 hover:text-[#ff5500]"
+                    : "bg-black text-zinc-500 border-zinc-800 hover:text-[#ff5500]"
                 }`}
-                aria-label="Toggle Intercept Engine"
               >
                 <Power className="w-5 h-5" />
               </button>
@@ -152,17 +137,13 @@ export default function HamburgerMenu({
           </div>
         </div>
 
-        {/* Schedule section (scrollable) */}
+        {/* Schedule section */}
         <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-4">
           <div className="border border-zinc-800 bg-black p-4 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest block">
-                  Delivery Schedule
-                </span>
-                <span className="text-xs text-zinc-500 mt-1 block">
-                  Next: {nextDeliveryTime}
-                </span>
+                <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest block">Schedule</span>
+                <span className="text-xs text-zinc-500 mt-1 block">Next: {nextDeliveryTime}</span>
               </div>
               <button
                 onClick={onManualBatchRelease}
@@ -176,24 +157,15 @@ export default function HamburgerMenu({
             {/* Active times */}
             <div className="flex flex-wrap gap-1.5">
               {deliveryTimes.length === 0 ? (
-                <span className="text-xs text-zinc-600 font-mono">
-                  No times set
-                </span>
+                <span className="text-xs text-zinc-600 font-mono">No times set</span>
               ) : (
                 deliveryTimes.map((time) => (
-                  <div
-                    key={time.id}
-                    className="flex items-center gap-1.5 border border-zinc-800 px-3 py-1.5 font-mono text-xs bg-black"
-                  >
+                  <div key={time.id} className="flex items-center gap-1.5 border border-zinc-800 px-3 py-1.5 font-mono text-xs bg-black">
                     <Clock className="w-3 h-3 text-zinc-500" />
                     <span className="font-bold text-white">
-                      {String(time.hour).padStart(2, "0")}:
-                      {String(time.minute).padStart(2, "0")}
+                      {String(time.hour).padStart(2, "0")}:{String(time.minute).padStart(2, "0")}
                     </span>
-                    <button
-                      onClick={() => onDeleteDeliveryTime(time.id)}
-                      className="text-zinc-600 hover:text-red-500 transition-colors ml-0.5"
-                    >
+                    <button onClick={() => onDeleteDeliveryTime(time.id)} className="text-zinc-600 hover:text-red-500 transition-colors ml-0.5">
                       <X className="w-3 h-3" />
                     </button>
                   </div>
@@ -209,10 +181,7 @@ export default function HamburgerMenu({
                 onChange={(e) => onNewTimeInputChange(e.target.value)}
                 className="bg-black border border-zinc-800 text-white font-mono text-xs px-3 py-2 outline-none focus:border-zinc-600 flex-1"
               />
-              <button
-                type="submit"
-                className="bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-white font-mono text-xs px-3 py-2 uppercase flex items-center gap-1"
-              >
+              <button type="submit" className="bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-white font-mono text-xs px-3 py-2 uppercase flex items-center gap-1">
                 <Plus className="w-3 h-3" />
                 Add
               </button>
@@ -220,33 +189,22 @@ export default function HamburgerMenu({
 
             {/* Presets */}
             <div className="grid grid-cols-3 gap-1.5 font-mono text-xs">
-              <button
-                onClick={() => onApplyPreset("MINIMAL")}
-                className="bg-black border border-zinc-900 hover:border-zinc-700 py-2 text-center text-zinc-500 hover:text-white uppercase transition-colors"
-              >
-                2x
-              </button>
-              <button
-                onClick={() => onApplyPreset("DEEP_WORK")}
-                className="bg-black border border-zinc-900 hover:border-zinc-700 py-2 text-center text-zinc-500 hover:text-white uppercase transition-colors"
-              >
-                4x
-              </button>
-              <button
-                onClick={() => onApplyPreset("HOURLY")}
-                className="bg-black border border-zinc-900 hover:border-zinc-700 py-2 text-center text-zinc-500 hover:text-white uppercase transition-colors"
-              >
-                10x
-              </button>
+              {([["MINIMAL", "2x"], ["DEEP_WORK", "4x"], ["HOURLY", "10x"]] as const).map(([preset, label]) => (
+                <button
+                  key={preset}
+                  onClick={() => onApplyPreset(preset)}
+                  className="bg-black border border-zinc-900 hover:border-zinc-700 py-2 text-center text-zinc-500 hover:text-white uppercase transition-colors"
+                >
+                  {label}
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Panel footer */}
+        {/* Footer */}
         <div className="p-4 border-t border-zinc-800 text-center">
-          <span className="text-xs font-mono text-zinc-600 uppercase tracking-widest">
-            v3.0
-          </span>
+          <span className="text-xs font-mono text-zinc-600 uppercase tracking-widest">v3.1</span>
         </div>
       </div>
     </>
