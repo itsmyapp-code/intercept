@@ -25,11 +25,16 @@ type VaultItem = {
   timestamp: number;
   released: boolean;
 };
+type SenderRule = {
+  allow: string[];
+  block: string[];
+};
 type RulesState = {
   master: boolean;
   currentMode: string;
   connected: boolean;
   apps: { [key in AppKey]: ModeKey };
+  senders: { [key in AppKey]: SenderRule };
   vault: VaultItem[];
 };
 
@@ -42,6 +47,12 @@ const DEFAULT_RULES: RulesState = {
     whatsapp: 'always_allow',
     slack: 'always_block',
     sms: 'schedule',
+  },
+  senders: {
+    gmail: { allow: [], block: [] },
+    whatsapp: { allow: [], block: [] },
+    slack: { allow: [], block: [] },
+    sms: { allow: [], block: [] },
   },
   vault: [
     {
@@ -94,6 +105,31 @@ export default function GatekeeperDashboard() {
   const setAppRule = (app: string, rule: string) => setState(s => ({ ...s, apps: { ...s.apps, [app]: rule } }));
   const releaseVault = (id: number) => setState(s => ({ ...s, vault: s.vault.map(n => n.id === id ? { ...n, released: true } : n) }));
   const clearVault = () => setState(s => ({ ...s, vault: [] }));
+  // Sender rules handlers
+  const addSender = (app: AppKey, type: 'allow' | 'block', value: string) => {
+    setState(s => ({
+      ...s,
+      senders: {
+        ...s.senders,
+        [app]: {
+          ...s.senders[app],
+          [type]: [...s.senders[app][type], value]
+        }
+      }
+    }));
+  };
+  const removeSender = (app: AppKey, type: 'allow' | 'block', value: string) => {
+    setState(s => ({
+      ...s,
+      senders: {
+        ...s.senders,
+        [app]: {
+          ...s.senders[app],
+          [type]: s.senders[app][type].filter((v: string) => v !== value)
+        }
+      }
+    }));
+  };
   const exportRules = () => {
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -120,7 +156,7 @@ export default function GatekeeperDashboard() {
     <div className="w-full max-w-2xl mx-auto bg-neutral-950 text-white rounded-lg shadow p-0 sm:p-8">
       {/* Header */}
       <header className="flex items-center gap-4 mb-8 border-b border-neutral-900 pb-4">
-        <img src="/Intercept-logo.png" alt="Gatekeeper Logo" className="w-10 h-10" />
+        <img src="/Intercept-logo.png" alt="Gatekeeper Logo" className="w-16 h-16 sm:w-10 sm:h-10" />
         <h1 className="text-3xl font-extrabold tracking-tight">GATEKEEPER</h1>
         <span className={`ml-auto px-3 py-1 rounded text-xs font-bold ${state.connected ? 'bg-green-700' : 'bg-red-700'}`}>{state.connected ? 'Connected' : 'Disconnected'}</span>
       </header>
@@ -138,21 +174,62 @@ export default function GatekeeperDashboard() {
       {/* Rules Matrix */}
       <section className="mb-8">
         <h2 className="text-lg font-bold mb-4">Rules Configuration</h2>
-        <div className="space-y-3">
+        <div className="space-y-6">
           {APPS.map(app => (
-            <div key={app.key} className="flex items-center gap-3 bg-neutral-900 rounded p-3">
-              <img src={app.icon} alt={app.name} className="w-7 h-7 rounded" />
-              <span className="font-semibold flex-1">{app.name}</span>
-              {MODES.map(mode => (
-                <button
-                  key={mode.key}
-                  className={`px-3 py-1 rounded border text-xs font-bold mx-1 ${state.apps[app.key as AppKey] === mode.key ? 'bg-white text-neutral-900 border-white' : 'bg-neutral-950 text-white border-neutral-800 hover:bg-neutral-900'}`}
-                  onClick={() => setAppRule(app.key as AppKey, mode.key)}
-                  aria-pressed={state.apps[app.key as AppKey] === mode.key}
-                >
-                  {mode.label}
-                </button>
-              ))}
+            <div key={app.key} className="bg-neutral-900 rounded p-3">
+              <div className="flex items-center gap-3 mb-2">
+                <img src={app.icon} alt={app.name} className="w-7 h-7 rounded" />
+                <span className="font-semibold flex-1">{app.name}</span>
+                {MODES.map(mode => (
+                  <button
+                    key={mode.key}
+                    className={`px-3 py-1 rounded border text-xs font-bold mx-1 ${state.apps[app.key as AppKey] === mode.key ? 'bg-white text-neutral-900 border-white' : 'bg-neutral-950 text-white border-neutral-800 hover:bg-neutral-900'}`}
+                    onClick={() => setAppRule(app.key as AppKey, mode.key)}
+                    aria-pressed={state.apps[app.key as AppKey] === mode.key}
+                  >
+                    {mode.label}
+                  </button>
+                ))}
+              </div>
+              {/* Sender rules UI */}
+              <div className="flex flex-col md:flex-row gap-4 mt-2">
+                <div className="flex-1">
+                  <div className="font-semibold text-xs mb-1">Always Allow (Sender)</div>
+                  <div className="flex gap-2 mb-1">
+                    <input type="text" className="px-2 py-1 rounded bg-neutral-800 text-white text-xs w-40" placeholder="Add sender (email/name)" id={`allow-input-${app.key}`} />
+                    <button className="px-2 py-1 rounded bg-green-700 text-xs font-bold" onClick={() => {
+                      const input = document.getElementById(`allow-input-${app.key}`) as HTMLInputElement;
+                      if (input && input.value.trim()) { addSender(app.key as AppKey, 'allow', input.value.trim()); input.value = ''; }
+                    }}>Add</button>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {state.senders[app.key as AppKey].allow.map(sender => (
+                      <span key={sender} className="bg-green-900 px-2 py-1 rounded text-xs flex items-center gap-1">
+                        {sender}
+                        <button className="ml-1 text-xs" onClick={() => removeSender(app.key as AppKey, 'allow', sender)}><X className="w-3 h-3" /></button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold text-xs mb-1">Always Block (Sender)</div>
+                  <div className="flex gap-2 mb-1">
+                    <input type="text" className="px-2 py-1 rounded bg-neutral-800 text-white text-xs w-40" placeholder="Add sender (email/name)" id={`block-input-${app.key}`} />
+                    <button className="px-2 py-1 rounded bg-red-700 text-xs font-bold" onClick={() => {
+                      const input = document.getElementById(`block-input-${app.key}`) as HTMLInputElement;
+                      if (input && input.value.trim()) { addSender(app.key as AppKey, 'block', input.value.trim()); input.value = ''; }
+                    }}>Add</button>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {state.senders[app.key as AppKey].block.map(sender => (
+                      <span key={sender} className="bg-red-900 px-2 py-1 rounded text-xs flex items-center gap-1">
+                        {sender}
+                        <button className="ml-1 text-xs" onClick={() => removeSender(app.key as AppKey, 'block', sender)}><X className="w-3 h-3" /></button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           ))}
         </div>

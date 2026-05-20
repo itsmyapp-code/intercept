@@ -32,6 +32,7 @@ class GatekeeperNotificationService : NotificationListenerService() {
     private lateinit var db: AppDatabase
     private lateinit var dao: HeldNotificationDao
     private var blockedPackages: Set<String> = emptySet()
+    private var senderRules: Map<String, Pair<Set<String>, Set<String>>> = emptyMap() // packageName -> Pair(allow, block)
 
     override fun onCreate() {
         super.onCreate()
@@ -40,17 +41,28 @@ class GatekeeperNotificationService : NotificationListenerService() {
             AppDatabase::class.java, "gatekeeper-db"
         ).build()
         dao = db.heldNotificationDao()
-        // TODO: Load blockedPackages from shared preferences or a config file
+        // TODO: Load blockedPackages and senderRules from shared preferences or a config file
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         val packageName = sbn.packageName
-        if (blockedPackages.contains(packageName)) {
+        val notification = sbn.notification
+        val extras = notification.extras
+        val title = extras.getCharSequence("android.title")?.toString() ?: ""
+        val text = extras.getCharSequence("android.text")?.toString() ?: ""
+        val sender = extractSender(packageName, title, text)
+
+        val rules = senderRules[packageName]
+        val allowList = rules?.first ?: emptySet<String>()
+        val blockList = rules?.second ?: emptySet<String>()
+
+        val shouldBlock =
+            blockedPackages.contains(packageName) ||
+            (blockList.isNotEmpty() && sender != null && blockList.contains(sender))
+        val shouldAllow = allowList.isNotEmpty() && sender != null && allowList.contains(sender)
+
+        if (shouldBlock && !shouldAllow) {
             cancelNotification(sbn.key)
-            val notification = sbn.notification
-            val extras = notification.extras
-            val title = extras.getCharSequence("android.title")?.toString()
-            val text = extras.getCharSequence("android.text")?.toString()
             val held = HeldNotification(
                 appName = packageName,
                 title = title,
@@ -58,6 +70,21 @@ class GatekeeperNotificationService : NotificationListenerService() {
                 timestamp = sbn.postTime
             )
             Thread { dao.insert(held) }.start()
+        }
+    }
+
+    private fun extractSender(packageName: String, title: String, text: String): String? {
+        // Basic heuristics for sender extraction
+        return when (packageName) {
+            "com.google.android.gm", "com.microsoft.office.outlook" -> {
+                // Gmail/Outlook: sender is usually in the title
+                title
+            }
+            "com.whatsapp", "com.android.mms", "com.google.android.apps.messaging" -> {
+                // WhatsApp/SMS: sender is usually in the title
+                title
+            }
+            else -> null
         }
     }
 }
