@@ -1,13 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.itsmyapp.gatekeeper">
+    package="com.itsmyapp.intercept">
 
     <application
-        android:label="Gatekeeper"
+        android:label="Intercept"
         android:icon="@mipmap/ic_launcher">
         <service
-            android:name=".GatekeeperNotificationService"
-            android:label="Gatekeeper Notification Listener"
-            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            android:name=".InterceptListenerService"
+            android:label="Intercept Notification Listener"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>

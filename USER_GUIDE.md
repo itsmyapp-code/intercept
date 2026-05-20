@@ -1,25 +1,58 @@
 # Intercept User Guide
 
 ## Overview
-Intercept is a privacy-first notification manager and control dashboard, designed for both web and Android. It allows you to filter, hold, and release notifications based on your own rules, with full compliance and transparency.
+Intercept is a privacy-first, ultra-minimalist notification filter and control dashboard designed to run as a Next.js Progressive Web Application (PWA) synchronised with a native Android background service. It helps you manage digital wellbeing by intercepting, holding, and batch-delivering notifications based on customisable scheduling rules.
 
-## Installation
-- **PWA:** On your mobile or desktop browser, tap the “Install App” button or use your browser’s “Add to Home Screen” option.
-- **Android Bridge:** Advanced users can install the GatekeeperNotificationService on Android for system-level notification control (see project docs).
+---
 
-## Dashboard Usage
-- **Header:** Shows app status, logo, and Android connection badge.
-- **Control Engine:** Master toggle to enable/disable filtering. “Current Mode” shows which rule set is active.
-- **Rules Matrix:** Set each app (Gmail, WhatsApp, Slack, SMS) to Always Allow, Always Block, or Schedule Based.
-- **The Vault:** View held notifications, release them to your system tray, or clear the log in Admin Settings.
-- **Admin Settings:** Import/export your rules as JSON, or clear all held notifications.
+## Supported Applications
+The control panel manages notification routing for the following critical communication platforms:
+- **Outlook** (`com.microsoft.office.outlook`)
+- **WhatsApp** (`com.whatsapp`)
+- **Messenger** (`com.facebook.orca`)
+- **Text Messages (SMS)** (`com.google.android.apps.messaging`)
+- **Gmail** (`com.google.android.gm`)
 
-## Compliance & Privacy
-- Cookie consent banner appears on first visit. You can accept or reject all non-essential cookies with equal prominence.
-- All compliance documents (Terms, Privacy, Cookies, Accessibility) are available in the footer.
-- Contact: [hello@itsmyapp.co.uk](mailto:hello@itsmyapp.co.uk)
+---
 
-## Android Bridge (Advanced)
-- Install the GatekeeperNotificationService on your Android device for system-level notification filtering.
-- Configure package rules to match your dashboard settings.
-- All blocked notifications are logged locally and can be synced to the web dashboard.
+## Interception Modes
+For each application, you can independently configure one of three routing modes:
+1. **Always Allow**: Notifications bypass the filter and display immediately in the system tray.
+2. **Always Block**: Notifications are permanently silenced and logged directly to **The Vault**.
+3. **Postbox**: Notifications are intercepted and held in the Vault, then batch-delivered at your custom-scheduled times.
+
+---
+
+## Postbox Batch Delivery Customisation
+You can configure a custom schedule of delivery times for your Postbox app notifications.
+
+- **Add Custom Times**: Use the time selector in the **Postbox Customisation** card and click `Add` to insert custom delivery hours.
+- **Quick Preset Profiles**:
+  - *Minimalist*: Restricts delivery to twice daily (08:00 and 20:00).
+  - *Deep Work*: Restricts delivery to four times daily (09:00, 13:00, 17:00, 21:00).
+  - *Hourly Batch*: Delivers every hour on the hour during typical work hours (09:00 to 18:00).
+- **Deliver Batches Now**: Click this action button to trigger an immediate manual release of all queued Postbox notifications to the system tray.
+
+---
+
+## The Vault
+The Vault acts as a chronological registry of all intercepted and blocked notifications:
+- **Release Alert**: Instantly forwards the held notification to your device's system tray.
+- **Delete Alert Log**: Removes the log record from the Vault registry.
+- **Clear Vault**: Deletes all log records at once.
+
+---
+
+## Sandbox Simulator
+Use the built-in Sandbox Simulator to test your notification rules without needing a connected Android device:
+1. Select the source app from the dropdown menu.
+2. Enter a simulated sender and message text.
+3. Click **Simulate Incoming Notification**.
+4. View the result and routing reasoning in the **Simulator Log Stream**.
+
+---
+
+## Privacy & Local Persistence
+- **Zero Cloud Storage**: All configurations, logs, and rules save instantly to the browser's `window.localStorage`.
+- **UK English Spelling**: Used consistently across the entire dashboard interface, service logs, and code configurations.
+- **PWA Installation**: Click the install button in the interface header to add Intercept directly to your device home screen.
