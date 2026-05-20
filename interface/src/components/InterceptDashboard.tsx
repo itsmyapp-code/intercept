@@ -97,7 +97,7 @@ export default function InterceptDashboard() {
   };
 
   return (
-    <div className="w-full text-zinc-50 font-sans min-h-[80vh] flex flex-col">
+    <div className="w-full max-w-full overflow-hidden text-zinc-50 font-sans min-h-[80vh] flex flex-col">
 
       {/* Toast */}
       {toastMessage && (
@@ -126,9 +126,9 @@ export default function InterceptDashboard() {
       </div>
 
       {/* Hero: Large centered logo + status */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-8 py-12 px-4">
+      <div className="flex-1 flex flex-col items-center justify-center gap-6 py-10 px-4 w-full">
         {/* Video logo with sound toggle */}
-        <div className="relative">
+        <div className="relative w-full flex justify-center">
           <video
             ref={videoRef}
             src="/Intercept.mp4"
@@ -136,11 +136,11 @@ export default function InterceptDashboard() {
             loop
             muted
             playsInline
-            className="w-72 sm:w-80 md:w-96 max-w-full h-auto object-contain"
+            className="w-64 sm:w-80 md:w-96 max-w-[85vw] h-auto object-contain"
           />
           <button
             onClick={toggleMute}
-            className={`absolute bottom-4 right-4 p-2 border transition-all ${
+            className={`absolute bottom-2 right-[7.5%] sm:right-[calc(50%-10rem)] p-2 border transition-all ${
               isMuted
                 ? "border-zinc-700 bg-black/70 text-zinc-500 hover:text-white hover:border-zinc-500"
                 : "border-[#ff5500] bg-[#ff5500]/20 text-[#ff5500] hover:bg-[#ff5500]/30"
@@ -152,26 +152,26 @@ export default function InterceptDashboard() {
         </div>
 
         {/* App name */}
-        <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter leading-none text-center">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tighter leading-none text-center">
           INTERCEPT<span className="text-[#ff5500]">.</span>
         </h1>
 
-        {/* Status badge */}
+        {/* Status badge — fully responsive */}
         <button
           onClick={handleToggleEngine}
-          className={`flex items-center gap-4 px-8 py-5 border-2 text-xl sm:text-2xl font-black uppercase tracking-wider transition-all ${
+          className={`flex items-center gap-3 px-5 py-4 sm:px-8 sm:py-5 border-2 text-lg sm:text-xl font-black uppercase tracking-wider transition-all max-w-[90vw] ${
             engineEngaged
               ? "border-[#ff5500] bg-[#ff5500]/10 text-[#ff5500] hover:bg-[#ff5500]/20"
               : "border-zinc-700 bg-zinc-900/50 text-zinc-500 hover:border-zinc-600 hover:text-zinc-400"
           }`}
         >
-          <Power className={`w-7 h-7 sm:w-8 sm:h-8 ${engineEngaged ? "text-[#ff5500]" : "text-zinc-600"}`} />
-          <span>{engineEngaged ? "ENGAGED" : "DISABLED"}</span>
-          <span className={`h-3 w-3 rounded-full ${engineEngaged ? "bg-[#ff5500] animate-pulse" : "bg-zinc-600"}`} />
+          <Power className={`w-6 h-6 flex-shrink-0 ${engineEngaged ? "text-[#ff5500]" : "text-zinc-600"}`} />
+          <span className="flex-shrink-0">{engineEngaged ? "ENGAGED" : "DISABLED"}</span>
+          <span className={`h-3 w-3 rounded-full flex-shrink-0 ${engineEngaged ? "bg-[#ff5500] animate-pulse" : "bg-zinc-600"}`} />
         </button>
 
         {/* Subtitle */}
-        <p className="text-sm text-zinc-500 font-mono uppercase tracking-widest text-center max-w-md">
+        <p className="text-xs sm:text-sm text-zinc-500 font-mono uppercase tracking-widest text-center px-4">
           {engineEngaged
             ? "Notifications are being filtered and batch-delivered."
             : "All notifications are bypassing the filter."
