@@ -385,7 +385,7 @@ export default function InterceptDashboard() {
       
       {/* Toast Alert overlay */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-white text-black font-mono text-xs font-bold px-4 py-3 rounded-none border border-black shadow-[4px_4px_0px_0px_rgba(255,87,34,1)] animate-slide-in">
+        <div className="fixed bottom-6 right-6 z-50 bg-white text-black font-mono text-sm font-bold px-5 py-4 rounded-none border border-black shadow-[4px_4px_0px_0px_rgba(255,87,34,1)] animate-slide-in">
           [SYSTEM LOG] {toastMessage.toUpperCase()}
         </div>
       )}
@@ -398,17 +398,17 @@ export default function InterceptDashboard() {
             <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tighter leading-none">
               INTERCEPT
             </h1>
-            <p className="text-[10px] text-zinc-500 font-mono tracking-widest uppercase mt-1">
+            <p className="text-xs text-zinc-500 font-mono tracking-widest uppercase mt-1">
               Optimised Native Alert Batching Control panel
             </p>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1 text-right font-mono text-xs">
+        <div className="flex flex-col items-end gap-1 text-right font-mono text-sm">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-zinc-300">SYSTEM: ONLINE</span>
           </div>
-          <span className="text-[9px] text-zinc-500">NEXT BATCH: {getNextDeliveryTime()}</span>
+          <span className="text-xs text-zinc-500">NEXT BATCH: {getNextDeliveryTime()}</span>
         </div>
       </header>
 
@@ -422,10 +422,10 @@ export default function InterceptDashboard() {
           <section className="border border-zinc-800 bg-[#09090b] p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xs font-mono text-zinc-400 uppercase tracking-widest">
+                <h2 className="text-sm font-mono text-zinc-400 uppercase tracking-widest">
                   Master Filter Engine
                 </h2>
-                <p className="text-xl font-bold uppercase tracking-tight mt-1">
+                <p className="text-2xl font-bold uppercase tracking-tight mt-1">
                   {engineEngaged ? "INTERCEPT STATE ENGAGED" : "BYPASSED & SUSPENDED"}
                 </p>
               </div>
@@ -441,7 +441,7 @@ export default function InterceptDashboard() {
                 <Power className="w-6 h-6" />
               </button>
             </div>
-            <div className="border-t border-zinc-900 pt-4 flex flex-col sm:flex-row justify-between text-xs text-zinc-400 gap-2 font-mono">
+            <div className="border-t border-zinc-900 pt-4 flex flex-col sm:flex-row justify-between text-sm text-zinc-400 gap-2 font-mono">
               <div>
                 <span className="text-zinc-500">BEHAVIOUR:</span>{" "}
                 {engineEngaged 
@@ -459,30 +459,30 @@ export default function InterceptDashboard() {
           <section className="border border-zinc-800 bg-[#09090b] p-6 space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-zinc-900 pb-4">
               <div>
-                <h2 className="text-xs font-mono text-zinc-400 uppercase tracking-widest">
+                <h2 className="text-sm font-mono text-zinc-400 uppercase tracking-widest">
                   Postbox Customisation
                 </h2>
-                <p className="text-lg font-bold uppercase tracking-tight mt-1">
+                <p className="text-xl font-bold uppercase tracking-tight mt-1">
                   Custom Batch Delivery Times
                 </p>
               </div>
               
               <button
                 onClick={handleManualBatchRelease}
-                className="bg-white text-black font-mono text-[10px] font-bold px-3 py-2 hover:bg-zinc-200 transition-colors uppercase flex items-center gap-1.5"
+                className="bg-white text-black font-mono text-xs font-bold px-4 py-2.5 hover:bg-zinc-200 transition-colors uppercase flex items-center gap-1.5"
               >
-                <RefreshCw className="w-3 h-3" />
+                <RefreshCw className="w-3.5 h-3.5" />
                 Deliver Batches Now
               </button>
             </div>
 
             {/* List of active delivery times */}
             <div className="space-y-3">
-              <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider block">
+              <span className="text-xs text-zinc-500 font-mono uppercase tracking-wider block">
                 Active Delivery Times:
               </span>
               {deliveryTimes.length === 0 ? (
-                <div className="text-xs text-zinc-500 py-2 font-mono">
+                <div className="text-sm text-zinc-500 py-2 font-mono">
                   No delivery times scheduled. Alerts will remain held in the Vault indefinitely.
                 </div>
               ) : (
@@ -490,11 +490,11 @@ export default function InterceptDashboard() {
                   {deliveryTimes.map(time => (
                     <div 
                       key={time.id} 
-                      className={`flex items-center gap-2 border px-3 py-1.5 font-mono text-xs ${
+                      className={`flex items-center gap-2 border px-4 py-2.5 font-mono text-sm ${
                         time.isEnabled ? "border-zinc-700 bg-black text-white" : "border-zinc-900 text-zinc-600 bg-black/40"
                       }`}
                     >
-                      <Clock className="w-3.5 h-3.5 text-zinc-500" />
+                      <Clock className="w-4 h-4 text-zinc-500" />
                       <span className="font-bold">
                         {String(time.hour).padStart(2, "0")}:{String(time.minute).padStart(2, "0")}
                       </span>
@@ -503,7 +503,7 @@ export default function InterceptDashboard() {
                         className="text-zinc-500 hover:text-red-500 ml-1 transition-colors"
                         title="Remove time"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ))}
@@ -516,7 +516,7 @@ export default function InterceptDashboard() {
               
               {/* Form to add a new time */}
               <form onSubmit={handleAddDeliveryTime} className="space-y-3">
-                <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider block">
+                <span className="text-xs text-zinc-500 font-mono uppercase tracking-wider block">
                   Add Delivery Time:
                 </span>
                 <div className="flex gap-2">
@@ -524,13 +524,13 @@ export default function InterceptDashboard() {
                     type="time"
                     value={newTimeInput}
                     onChange={e => setNewTimeInput(e.target.value)}
-                    className="bg-black border border-zinc-800 text-white font-mono text-xs px-3 py-2 rounded-none outline-none focus:border-zinc-500 flex-1"
+                    className="bg-black border border-zinc-800 text-white font-mono text-sm px-4 py-3 rounded-none outline-none focus:border-zinc-500 flex-1"
                   />
                   <button
                     type="submit"
-                    className="bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 text-white font-mono text-xs px-4 py-2 uppercase flex items-center gap-1.5"
+                    className="bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 text-white font-mono text-sm px-5 py-3 uppercase flex items-center gap-1.5"
                   >
-                    <Plus className="w-3.5 h-3.5" />
+                    <Plus className="w-4 h-4" />
                     Add
                   </button>
                 </div>
@@ -538,25 +538,25 @@ export default function InterceptDashboard() {
 
               {/* Schedule presets */}
               <div className="space-y-3">
-                <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider block">
+                <span className="text-xs text-zinc-500 font-mono uppercase tracking-wider block">
                   Preset Delivery Profiles:
                 </span>
-                <div className="grid grid-cols-3 gap-2 font-mono text-[9px]">
+                <div className="grid grid-cols-3 gap-2 font-mono text-xs">
                   <button
                     onClick={() => applyPreset("MINIMAL")}
-                    className="bg-black border border-zinc-900 hover:border-zinc-700 py-2 text-center text-zinc-400 hover:text-white uppercase transition-colors"
+                    className="bg-black border border-zinc-900 hover:border-zinc-700 py-3 text-center text-zinc-400 hover:text-white uppercase transition-colors"
                   >
                     Minimalist (2x)
                   </button>
                   <button
                     onClick={() => applyPreset("DEEP_WORK")}
-                    className="bg-black border border-zinc-900 hover:border-zinc-700 py-2 text-center text-zinc-400 hover:text-white uppercase transition-colors"
+                    className="bg-black border border-zinc-900 hover:border-zinc-700 py-3 text-center text-zinc-400 hover:text-white uppercase transition-colors"
                   >
                     Deep Work (4x)
                   </button>
                   <button
                     onClick={() => applyPreset("HOURLY")}
-                    className="bg-black border border-zinc-900 hover:border-zinc-700 py-2 text-center text-zinc-400 hover:text-white uppercase transition-colors"
+                    className="bg-black border border-zinc-900 hover:border-zinc-700 py-3 text-center text-zinc-400 hover:text-white uppercase transition-colors"
                   >
                     Hourly Batch (10x)
                   </button>
@@ -570,31 +570,31 @@ export default function InterceptDashboard() {
           <section className="border border-zinc-800 bg-[#09090b] p-6 space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
-                <h2 className="text-xs font-mono text-zinc-400 uppercase tracking-widest">
+                <h2 className="text-sm font-mono text-zinc-400 uppercase tracking-widest">
                   Granular App customisation
                 </h2>
-                <p className="text-lg font-bold uppercase tracking-tight mt-1">
+                <p className="text-xl font-bold uppercase tracking-tight mt-1">
                   Notification Routing matrix
                 </p>
               </div>
 
               {/* Global control presets */}
-              <div className="flex flex-wrap gap-1.5 font-mono text-[9px]">
+              <div className="flex flex-wrap gap-1.5 font-mono text-xs">
                 <button
                   onClick={() => handleBulkRuleChange("ALWAYS_ALLOW")}
-                  className="bg-black border border-zinc-900 hover:border-zinc-700 px-2 py-1 text-zinc-400 hover:text-white uppercase transition-colors"
+                  className="bg-black border border-zinc-900 hover:border-zinc-700 px-3 py-2 text-zinc-400 hover:text-white uppercase transition-colors"
                 >
                   Allow All
                 </button>
                 <button
                   onClick={() => handleBulkRuleChange("ALWAYS_BLOCK")}
-                  className="bg-black border border-zinc-900 hover:border-zinc-700 px-2 py-1 text-zinc-400 hover:text-white uppercase transition-colors"
+                  className="bg-black border border-zinc-900 hover:border-zinc-700 px-3 py-2 text-zinc-400 hover:text-white uppercase transition-colors"
                 >
                   Block All
                 </button>
                 <button
                   onClick={() => handleBulkRuleChange("POSTBOX")}
-                  className="bg-black border border-zinc-900 hover:border-zinc-700 px-2 py-1 text-zinc-400 hover:text-white uppercase transition-colors"
+                  className="bg-black border border-zinc-900 hover:border-zinc-700 px-3 py-2 text-zinc-400 hover:text-white uppercase transition-colors"
                 >
                   Postbox All
                 </button>
@@ -612,21 +612,21 @@ export default function InterceptDashboard() {
                     className="border border-zinc-900 bg-black p-4 space-y-3 transition-colors hover:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 bg-zinc-950 border border-zinc-900 ${app.iconColor}`}>
-                        <AppIcon className="w-4 h-4" />
+                      <div className={`p-2.5 bg-zinc-950 border border-zinc-900 ${app.iconColor}`}>
+                        <AppIcon className="w-5 h-5" />
                       </div>
                       <div>
-                        <span className="font-bold text-sm tracking-wide uppercase block">
+                        <span className="font-bold text-base tracking-wide uppercase block">
                           {app.name}
                         </span>
-                        <span className="text-[9px] text-zinc-500 font-mono">
+                        <span className="text-xs text-zinc-500 font-mono">
                           {app.package}
                         </span>
                       </div>
                     </div>
 
                     {/* Tabs control */}
-                    <div className="grid grid-cols-3 border border-zinc-800 text-[10px] font-mono leading-none sm:w-72">
+                    <div className="grid grid-cols-3 border border-zinc-800 text-xs font-mono leading-none sm:w-80">
                       {(["ALWAYS_ALLOW", "ALWAYS_BLOCK", "POSTBOX"] as const).map(mode => {
                         const isActive = config.mode === mode;
                         let label = "";
@@ -638,7 +638,7 @@ export default function InterceptDashboard() {
                           <button
                             key={mode}
                             onClick={() => handleAppModeChange(app.key, mode)}
-                            className={`py-2.5 px-3 text-center border-r last:border-r-0 border-zinc-800 transition-all ${
+                            className={`py-3.5 px-4 text-center border-r last:border-r-0 border-zinc-800 transition-all ${
                               isActive 
                                 ? "bg-white text-black font-bold" 
                                 : "text-zinc-500 hover:text-white"
@@ -667,8 +667,8 @@ export default function InterceptDashboard() {
               <div className="flex items-center gap-2">
                 <Archive className="w-5 h-5 text-white" />
                 <div>
-                  <h2 className="text-lg font-black uppercase tracking-tight">THE VAULT</h2>
-                  <p className="text-[9px] text-zinc-500 font-mono uppercase tracking-widest mt-0.5">
+                  <h2 className="text-xl font-black uppercase tracking-tight">THE VAULT</h2>
+                  <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest mt-0.5">
                     Held & Diverted Notifications
                   </p>
                 </div>
@@ -677,16 +677,16 @@ export default function InterceptDashboard() {
               {interceptedAlerts.length > 0 && (
                 <button
                   onClick={handleClearVault}
-                  className="p-2 border border-zinc-900 text-zinc-500 hover:text-red-500 hover:border-zinc-800 transition-colors"
+                  className="p-2.5 border border-zinc-900 text-zinc-500 hover:text-red-500 hover:border-zinc-800 transition-colors"
                   title="Clear Vault Registry"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-4.5 h-4.5" />
                 </button>
               )}
             </div>
 
             {/* Description note using UK spelling */}
-            <div className="text-[10px] text-zinc-500 font-mono border-l border-zinc-800 pl-3">
+            <div className="text-xs text-zinc-500 font-mono border-l border-zinc-800 pl-3">
               Chronological registry of prioritised and processed customisations. Notifications captured under Postbox mode are held here until delivery time is reached or manually released.
             </div>
 
@@ -695,10 +695,10 @@ export default function InterceptDashboard() {
               {interceptedAlerts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-zinc-600 border border-dashed border-zinc-900 text-center space-y-2">
                   <SlidersHorizontal className="w-8 h-8 opacity-30" />
-                  <p className="font-mono text-[10px] uppercase tracking-wider">
+                  <p className="font-mono text-xs uppercase tracking-wider">
                     Vault is empty
                   </p>
-                  <p className="text-[9px] max-w-xs px-4">
+                  <p className="text-xs max-w-xs px-4">
                     Notifications captured from your device will appear here in chronological order.
                   </p>
                 </div>
@@ -714,14 +714,14 @@ export default function InterceptDashboard() {
                           : "border-zinc-800 bg-black hover:border-zinc-700"
                       }`}
                     >
-                      <div className="flex items-center justify-between text-[10px] font-mono">
+                      <div className="flex items-center justify-between text-xs font-mono">
                         <div className="flex items-center gap-1.5">
                           <span className={`h-1.5 w-1.5 rounded-full ${appInfo?.iconColor || "bg-zinc-500"}`} />
                           <span className="font-bold text-zinc-300 uppercase">
                             {appInfo?.name || "App"}
                           </span>
                         </div>
-                        <span className="text-zinc-600">
+                        <span className="text-zinc-500">
                           {new Date(alert.timestamp).toLocaleString("en-GB", {
                             hour: "2-digit",
                             minute: "2-digit",
@@ -733,32 +733,32 @@ export default function InterceptDashboard() {
                       </div>
 
                       <div className="space-y-1">
-                        <h4 className="text-xs font-bold uppercase tracking-tight text-white">
+                        <h4 className="text-sm font-bold uppercase tracking-tight text-white">
                           {alert.title}
                         </h4>
-                        <p className="text-xs text-zinc-400 font-sans leading-relaxed break-words">
+                        <p className="text-sm text-zinc-300 font-sans leading-relaxed break-words">
                           {alert.textBody}
                         </p>
                       </div>
 
                       {/* Display Postbox batch status */}
                       {!alert.isReleased && alert.isPostboxBatch && (
-                        <div className="text-[9px] font-mono text-zinc-500 uppercase flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-zinc-600" />
+                        <div className="text-xs font-mono text-zinc-500 uppercase flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 text-zinc-600" />
                           Held for batch delivery
                         </div>
                       )}
 
                       <div className="flex items-center justify-between pt-2 border-t border-zinc-950 gap-2">
                         {alert.isReleased ? (
-                          <div className="flex items-center gap-1.5 text-zinc-500 font-mono text-[9px] uppercase">
+                          <div className="flex items-center gap-1.5 text-zinc-500 font-mono text-xs uppercase">
                             <CheckCircle2 className="w-3.5 h-3.5 text-zinc-600" />
                             Released to System
                           </div>
                         ) : (
                           <button
                             onClick={() => handleReleaseAlert(alert.id)}
-                            className="bg-white text-black font-mono text-[9px] font-bold px-3 py-1.5 hover:bg-zinc-200 transition-colors uppercase"
+                            className="bg-white text-black font-mono text-xs font-bold px-4 py-2 hover:bg-zinc-200 transition-colors uppercase"
                           >
                             Release Alert
                           </button>
@@ -769,7 +769,7 @@ export default function InterceptDashboard() {
                           className="p-1.5 border border-zinc-950 text-zinc-600 hover:text-red-500 hover:border-zinc-900 transition-colors"
                           title="Delete Alert Log"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -780,7 +780,7 @@ export default function InterceptDashboard() {
 
             {/* PWA Context footer */}
             <div className="border-t border-zinc-900 pt-4 text-center">
-              <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest">
+              <span className="text-xs font-mono text-zinc-600 uppercase tracking-widest">
                 INTERCEPT CONTROL DEPLOYMENT v2.8
               </span>
             </div>
