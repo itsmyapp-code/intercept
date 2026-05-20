@@ -385,7 +385,7 @@ export default function InterceptDashboard() {
       
       {/* Toast Alert overlay */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-white text-black font-mono text-sm font-bold px-5 py-4 rounded-none border border-black shadow-[4px_4px_0px_0px_rgba(255,87,34,1)] animate-slide-in">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#09090b] text-[#ff5500] font-mono text-sm font-bold px-5 py-4 rounded-none border border-[#ff5500] shadow-[4px_4px_0px_0px_rgba(255,85,0,1)] animate-slide-in">
           [SYSTEM LOG] {toastMessage.toUpperCase()}
         </div>
       )}
@@ -393,10 +393,14 @@ export default function InterceptDashboard() {
       {/* Header section with brand logo */}
       <header className="flex flex-col sm:flex-row items-center justify-between border border-zinc-800 bg-[#09090b] p-6 gap-4">
         <div className="flex items-center gap-4">
-          <InterceptLogo className="w-16 h-16 sm:w-12 sm:h-12 flex-shrink-0" />
+          <img
+            src="/Intercept-logo.png"
+            className="w-16 h-16 sm:w-14 sm:h-14 flex-shrink-0 border border-zinc-800 object-cover"
+            alt="Intercept Logo"
+          />
           <div>
             <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tighter leading-none">
-              INTERCEPT
+              INTERCEPT<span className="text-[#ff5500]">.</span>
             </h1>
             <p className="text-xs text-zinc-500 font-mono tracking-widest uppercase mt-1">
               Optimised Native Alert Batching Control panel
@@ -433,8 +437,8 @@ export default function InterceptDashboard() {
                 onClick={handleToggleEngine}
                 className={`p-4 rounded-none transition-all border ${
                   engineEngaged
-                    ? "bg-white text-black border-white hover:bg-zinc-200"
-                    : "bg-black text-zinc-500 border-zinc-800 hover:border-zinc-700 hover:text-white"
+                    ? "bg-[#ff5500] text-white border-[#ff5500] hover:bg-[#ff6b00]"
+                    : "bg-black text-zinc-500 border-zinc-800 hover:border-zinc-700 hover:text-[#ff5500]"
                 }`}
                 aria-label="Toggle Intercept Engine"
               >
@@ -469,7 +473,7 @@ export default function InterceptDashboard() {
               
               <button
                 onClick={handleManualBatchRelease}
-                className="bg-white text-black font-mono text-xs font-bold px-4 py-2.5 hover:bg-zinc-200 transition-colors uppercase flex items-center gap-1.5"
+                className="bg-[#ff5500] text-white border border-[#ff5500] font-mono text-xs font-bold px-4 py-2.5 hover:bg-[#ff6b00] transition-colors uppercase flex items-center gap-1.5"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 Deliver Batches Now
@@ -609,7 +613,13 @@ export default function InterceptDashboard() {
                 return (
                   <div 
                     key={app.key}
-                    className="border border-zinc-900 bg-black p-4 space-y-3 transition-colors hover:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                    className={`border p-4 space-y-3 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                      config.mode === "POSTBOX" 
+                        ? "border-[#ff5500]/40 bg-[#ff5500]/5 hover:border-[#ff5500]/70" 
+                        : config.mode === "ALWAYS_BLOCK"
+                        ? "border-red-900/40 bg-red-950/5 hover:border-red-800/60"
+                        : "border-zinc-900 bg-black hover:border-zinc-800"
+                    }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`p-2.5 bg-zinc-950 border border-zinc-900 ${app.iconColor}`}>
@@ -634,13 +644,18 @@ export default function InterceptDashboard() {
                         if (mode === "ALWAYS_BLOCK") label = "BLOCK";
                         if (mode === "POSTBOX") label = "POSTBOX";
 
+                        const activeStyles = 
+                          mode === "ALWAYS_ALLOW" ? "bg-emerald-600 text-white font-bold" :
+                          mode === "ALWAYS_BLOCK" ? "bg-red-600 text-white font-bold" :
+                          "bg-[#ff5500] text-white font-bold";
+
                         return (
                           <button
                             key={mode}
                             onClick={() => handleAppModeChange(app.key, mode)}
                             className={`py-3.5 px-4 text-center border-r last:border-r-0 border-zinc-800 transition-all ${
                               isActive 
-                                ? "bg-white text-black font-bold" 
+                                ? activeStyles 
                                 : "text-zinc-500 hover:text-white"
                             }`}
                           >
@@ -758,7 +773,7 @@ export default function InterceptDashboard() {
                         ) : (
                           <button
                             onClick={() => handleReleaseAlert(alert.id)}
-                            className="bg-white text-black font-mono text-xs font-bold px-4 py-2 hover:bg-zinc-200 transition-colors uppercase"
+                            className="bg-[#ff5500] text-white font-mono text-xs font-bold px-4 py-2 hover:bg-[#ff6b00] transition-colors uppercase"
                           >
                             Release Alert
                           </button>
