@@ -85,7 +85,7 @@ export default function AppsPage() {
 
         <div className="space-y-4">
           {APPS.map(app => {
-            const config = state.appCustomisations[app.key];
+            const config = state.appCustomisations[app.key] ?? { mode: "ALWAYS_ALLOW" as const };
             const AppIcon = ICON_MAP[app.key] || Mail;
             return (
               <div

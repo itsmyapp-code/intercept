@@ -72,9 +72,15 @@ export function loadState(): InterceptState {
     const cached = window.localStorage.getItem(LOCAL_STORAGE_KEY);
     if (cached) {
       const parsed = JSON.parse(cached);
+      // Merge defaults with cached values so newly-added app keys (e.g. calls_sim1/2)
+      // always have a fallback — prevents crashes when old state is in localStorage.
+      const mergedCustomisations: Record<AppKey, AppCustomisation> = {
+        ...DEFAULT_CUSTOMISATIONS,
+        ...(parsed.appCustomisations || {}),
+      };
       return {
         engineEngaged: typeof parsed.engineEngaged === "boolean" ? parsed.engineEngaged : true,
-        appCustomisations: parsed.appCustomisations || DEFAULT_CUSTOMISATIONS,
+        appCustomisations: mergedCustomisations,
         deliveryTimes: parsed.deliveryTimes || DEFAULT_DELIVERY_TIMES,
         interceptedAlerts: parsed.interceptedAlerts || [],
       };
