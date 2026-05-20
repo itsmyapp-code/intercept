@@ -14,25 +14,25 @@ The following diagram illustrates the relationship between the Progressive Web A
 
 ```mermaid
 graph TD
-    subgraph PWA Frontend [Next.js Web App / PWA]
-        UI[Dashboard / UI Config]
-        LS[(Local Storage)]
+    subgraph PWA_Frontend ["Next.js Web App / PWA"]
+        UI["Dashboard / UI Config"]
+        LS[("Local Storage")]
         UI -->|Saves state locally| LS
     end
 
-    subgraph Native Android Bridge [Android Background Suite]
-        NLS[InterceptListenerService<br>NotificationListenerService]
-        CSS[InterceptCallScreeningService<br>CallScreeningService]
-        DB[(Room Database)]
+    subgraph Native_Android_Bridge ["Android Background Suite"]
+        NLS["InterceptListenerService<br>NotificationListenerService"]
+        CSS["InterceptCallScreeningService<br>CallScreeningService"]
+        DB[("Room Database")]
         
         NLS -->|Diverts notification| DB
         CSS -->|Evaluates caller SIM rule| DB
     end
 
-    subgraph Hardware API [Android OS Integration]
-        NotifAPI[StatusBarNotification API] --> NLS
-        CallAPI[Telecom Inbound Call details] --> CSS
-        SubMgr[SubscriptionManager SIM detection] --> NLS
+    subgraph Hardware_API ["Android OS Integration"]
+        NotifAPI["StatusBarNotification API"] --> NLS
+        CallAPI["Telecom Inbound Call details"] --> CSS
+        SubMgr["SubscriptionManager SIM detection"] --> NLS
     end
 
     classDef orange fill:#ff5500,stroke:#ff5500,color:#fff;
@@ -40,8 +40,11 @@ graph TD
     classDef db fill:#18181b,stroke:#27272a,color:#e4e4e7;
 
     class UI,NLS,CSS,SubMgr orange;
-    class PWA Frontend,Native Android Bridge,Hardware API dark;
     class LS,DB db;
+
+    style PWA_Frontend fill:#09090b,stroke:#27272a,stroke-dasharray: 5 5;
+    style Native_Android_Bridge fill:#09090b,stroke:#27272a,stroke-dasharray: 5 5;
+    style Hardware_API fill:#09090b,stroke:#27272a,stroke-dasharray: 5 5;
 ```
 
 ---
