@@ -1,0 +1,23 @@
+{
+  "name": "Intercept",
+  "short_name": "Intercept",
+  "description": "Notification manager for scheduling and holding notifications.",
+  "lang": "en-GB",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#18181b",
+  "theme_color": "#18181b",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
