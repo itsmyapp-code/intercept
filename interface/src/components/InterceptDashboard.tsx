@@ -20,6 +20,7 @@ import {
   CheckCircle2
 } from "lucide-react";
 import InterceptLogo from "./InterceptLogo";
+import HamburgerMenu from "./HamburgerMenu";
 
 // App definitions containing Outlook, WhatsApp, Messenger, Text Messages, and Gmail
 const APPS = [
@@ -391,29 +392,40 @@ export default function InterceptDashboard() {
       )}
 
       {/* Header section with brand logo */}
-      <header className="flex flex-col sm:flex-row items-center justify-between border border-zinc-800 bg-[#09090b] p-6 gap-4">
+      <header className="flex items-center justify-between border border-zinc-800 bg-[#09090b] p-4 sm:p-6 gap-4">
         <div className="flex items-center gap-4">
           <img
             src="/Intercept-logo.png"
-            className="w-16 h-16 sm:w-14 sm:h-14 flex-shrink-0 border border-zinc-800 object-cover"
+            className="w-20 h-20 sm:w-28 sm:h-28 flex-shrink-0 border border-zinc-800 object-cover"
             alt="Intercept Logo"
           />
           <div>
-            <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tighter leading-none">
+            <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tighter leading-none">
               INTERCEPT<span className="text-[#ff5500]">.</span>
             </h1>
             <p className="text-xs text-zinc-500 font-mono tracking-widest uppercase mt-1">
-              Optimised Native Alert Batching Control panel
+              Notification Control Panel
             </p>
+            <div className="flex items-center gap-2 mt-2 font-mono text-xs">
+              <span className={`h-2 w-2 rounded-full ${engineEngaged ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-600'}`} />
+              <span className="text-zinc-400">{engineEngaged ? 'ENGAGED' : 'BYPASSED'}</span>
+              <span className="text-zinc-600">|</span>
+              <span className="text-zinc-500">NEXT: {getNextDeliveryTime()}</span>
+            </div>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1 text-right font-mono text-sm">
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-zinc-300">SYSTEM: ONLINE</span>
-          </div>
-          <span className="text-xs text-zinc-500">NEXT BATCH: {getNextDeliveryTime()}</span>
-        </div>
+        <HamburgerMenu
+          engineEngaged={engineEngaged}
+          onToggleEngine={handleToggleEngine}
+          deliveryTimes={deliveryTimes}
+          newTimeInput={newTimeInput}
+          onNewTimeInputChange={setNewTimeInput}
+          onAddDeliveryTime={handleAddDeliveryTime}
+          onDeleteDeliveryTime={handleDeleteDeliveryTime}
+          onManualBatchRelease={handleManualBatchRelease}
+          onApplyPreset={applyPreset}
+          nextDeliveryTime={getNextDeliveryTime()}
+        />
       </header>
 
       {/* Grid container */}
@@ -422,153 +434,7 @@ export default function InterceptDashboard() {
         {/* Left Column (Span 2) - Config & Schedules */}
         <div className="lg:col-span-2 space-y-6">
           
-          {/* Master Engine Switch Container */}
-          <section className="border border-zinc-800 bg-[#09090b] p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-sm font-mono text-zinc-400 uppercase tracking-widest">
-                  Master Filter Engine
-                </h2>
-                <p className="text-2xl font-bold uppercase tracking-tight mt-1">
-                  {engineEngaged ? "INTERCEPT STATE ENGAGED" : "BYPASSED & SUSPENDED"}
-                </p>
-              </div>
-              <button
-                onClick={handleToggleEngine}
-                className={`p-4 rounded-none transition-all border ${
-                  engineEngaged
-                    ? "bg-[#ff5500] text-white border-[#ff5500] hover:bg-[#ff6b00]"
-                    : "bg-black text-zinc-500 border-zinc-800 hover:border-zinc-700 hover:text-[#ff5500]"
-                }`}
-                aria-label="Toggle Intercept Engine"
-              >
-                <Power className="w-6 h-6" />
-              </button>
-            </div>
-            <div className="border-t border-zinc-900 pt-4 flex flex-col sm:flex-row justify-between text-sm text-zinc-400 gap-2 font-mono">
-              <div>
-                <span className="text-zinc-500">BEHAVIOUR:</span>{" "}
-                {engineEngaged 
-                  ? "Incoming alerts are prioritised and batch-delivered." 
-                  : "All notification bypass lists are bypassed."
-                }
-              </div>
-              <div className="text-zinc-500">
-                ACTIVE PROFILE: {engineEngaged ? "[ENGAGED]" : "[BYPASSED]"}
-              </div>
-            </div>
-          </section>
 
-          {/* Postbox Delivery Schedule Manager */}
-          <section className="border border-zinc-800 bg-[#09090b] p-6 space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-zinc-900 pb-4">
-              <div>
-                <h2 className="text-sm font-mono text-zinc-400 uppercase tracking-widest">
-                  Postbox Customisation
-                </h2>
-                <p className="text-xl font-bold uppercase tracking-tight mt-1">
-                  Custom Batch Delivery Times
-                </p>
-              </div>
-              
-              <button
-                onClick={handleManualBatchRelease}
-                className="bg-[#ff5500] text-white border border-[#ff5500] font-mono text-xs font-bold px-4 py-2.5 hover:bg-[#ff6b00] transition-colors uppercase flex items-center gap-1.5"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                Deliver Batches Now
-              </button>
-            </div>
-
-            {/* List of active delivery times */}
-            <div className="space-y-3">
-              <span className="text-xs text-zinc-500 font-mono uppercase tracking-wider block">
-                Active Delivery Times:
-              </span>
-              {deliveryTimes.length === 0 ? (
-                <div className="text-sm text-zinc-500 py-2 font-mono">
-                  No delivery times scheduled. Alerts will remain held in the Vault indefinitely.
-                </div>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {deliveryTimes.map(time => (
-                    <div 
-                      key={time.id} 
-                      className={`flex items-center gap-2 border px-4 py-2.5 font-mono text-sm ${
-                        time.isEnabled ? "border-zinc-700 bg-black text-white" : "border-zinc-900 text-zinc-600 bg-black/40"
-                      }`}
-                    >
-                      <Clock className="w-4 h-4 text-zinc-500" />
-                      <span className="font-bold">
-                        {String(time.hour).padStart(2, "0")}:{String(time.minute).padStart(2, "0")}
-                      </span>
-                      <button
-                        onClick={() => handleDeleteDeliveryTime(time.id)}
-                        className="text-zinc-500 hover:text-red-500 ml-1 transition-colors"
-                        title="Remove time"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Time Add Input & Presets */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-              
-              {/* Form to add a new time */}
-              <form onSubmit={handleAddDeliveryTime} className="space-y-3">
-                <span className="text-xs text-zinc-500 font-mono uppercase tracking-wider block">
-                  Add Delivery Time:
-                </span>
-                <div className="flex gap-2">
-                  <input
-                    type="time"
-                    value={newTimeInput}
-                    onChange={e => setNewTimeInput(e.target.value)}
-                    className="bg-black border border-zinc-800 text-white font-mono text-sm px-4 py-3 rounded-none outline-none focus:border-zinc-500 flex-1"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 text-white font-mono text-sm px-5 py-3 uppercase flex items-center gap-1.5"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add
-                  </button>
-                </div>
-              </form>
-
-              {/* Schedule presets */}
-              <div className="space-y-3">
-                <span className="text-xs text-zinc-500 font-mono uppercase tracking-wider block">
-                  Preset Delivery Profiles:
-                </span>
-                <div className="grid grid-cols-3 gap-2 font-mono text-xs">
-                  <button
-                    onClick={() => applyPreset("MINIMAL")}
-                    className="bg-black border border-zinc-900 hover:border-zinc-700 py-3 text-center text-zinc-400 hover:text-white uppercase transition-colors"
-                  >
-                    Minimalist (2x)
-                  </button>
-                  <button
-                    onClick={() => applyPreset("DEEP_WORK")}
-                    className="bg-black border border-zinc-900 hover:border-zinc-700 py-3 text-center text-zinc-400 hover:text-white uppercase transition-colors"
-                  >
-                    Deep Work (4x)
-                  </button>
-                  <button
-                    onClick={() => applyPreset("HOURLY")}
-                    className="bg-black border border-zinc-900 hover:border-zinc-700 py-3 text-center text-zinc-400 hover:text-white uppercase transition-colors"
-                  >
-                    Hourly Batch (10x)
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </section>
 
           {/* Granular App Config Rows */}
           <section className="border border-zinc-800 bg-[#09090b] p-6 space-y-6">
@@ -796,7 +662,7 @@ export default function InterceptDashboard() {
             {/* PWA Context footer */}
             <div className="border-t border-zinc-900 pt-4 text-center">
               <span className="text-xs font-mono text-zinc-600 uppercase tracking-widest">
-                INTERCEPT CONTROL DEPLOYMENT v2.8
+                INTERCEPT CONTROL DEPLOYMENT v3.0
               </span>
             </div>
 
