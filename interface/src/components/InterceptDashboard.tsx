@@ -655,89 +655,6 @@ export default function InterceptDashboard() {
             </div>
           </section>
 
-          {/* Simulator Panel for testing */}
-          <section className="border border-zinc-800 bg-[#09090b] p-6 space-y-4">
-            <div>
-              <h2 className="text-xs font-mono text-zinc-400 uppercase tracking-widest">
-                Sandbox Simulator
-              </h2>
-              <p className="text-lg font-bold uppercase tracking-tight mt-1">
-                Simulate System Notification Processing
-              </p>
-            </div>
-
-            <form onSubmit={handleSimulateNotification} className="space-y-4 text-xs font-mono">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] text-zinc-500 uppercase">APP SOURCE</label>
-                  <select
-                    value={simApp}
-                    onChange={e => setSimApp(e.target.value as AppKey)}
-                    className="bg-black border border-zinc-800 px-3 py-2 text-white rounded-none w-full"
-                  >
-                    {APPS.map(a => (
-                      <option key={a.key} value={a.key}>{a.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex flex-col gap-1.5 sm:col-span-2">
-                  <label className="text-[10px] text-zinc-500 uppercase">TITLE / SENDER</label>
-                  <input
-                    type="text"
-                    value={simSender}
-                    onChange={e => setSimSender(e.target.value)}
-                    placeholder="e.g. Sarah Jenkins"
-                    className="bg-black border border-zinc-800 px-3 py-2 text-white rounded-none w-full"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] text-zinc-500 uppercase">TEXT BODY</label>
-                <input
-                  type="text"
-                  value={simMessage}
-                  onChange={e => setSimMessage(e.target.value)}
-                  placeholder="e.g. Can you confirm the prioritised delivery timings?"
-                  className="bg-black border border-zinc-800 px-3 py-2 text-white rounded-none w-full"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-white text-black font-bold uppercase py-2 hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
-              >
-                <Play className="w-3.5 h-3.5 fill-black" />
-                SIMULATE INCOMING NOTIFICATION
-              </button>
-            </form>
-
-            {/* Simulation Log stream */}
-            {simulationLogs.length > 0 && (
-              <div className="border-t border-zinc-900 pt-4 space-y-2">
-                <span className="text-[10px] text-zinc-500 font-mono uppercase">SIMULATOR LOG STREAM:</span>
-                <div className="bg-black border border-zinc-900 p-3 max-h-40 overflow-y-auto space-y-1.5 text-[10px] font-mono">
-                  {simulationLogs.map(log => (
-                    <div key={log.id} className="flex flex-col border-b border-zinc-900 pb-1.5 last:border-0 last:pb-0">
-                      <div className="flex items-center justify-between">
-                        <span className="text-zinc-500">
-                          {new Date(log.timestamp).toLocaleTimeString("en-GB")}
-                        </span>
-                        <span className={log.status === "INTERCEPTED" ? "text-orange-500 font-bold" : "text-emerald-500 font-bold"}>
-                          [{log.status}]
-                        </span>
-                      </div>
-                      <div className="text-zinc-300">
-                        {APPS.find(a => a.key === log.appKey)?.name}: {log.reason}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </section>
-
         </div>
 
         {/* Right Column - The Vault */}
@@ -782,7 +699,7 @@ export default function InterceptDashboard() {
                     Vault is empty
                   </p>
                   <p className="text-[9px] max-w-xs px-4">
-                    Simulate alerts using the sandbox panel to test the interception routing rules.
+                    Notifications captured from your device will appear here in chronological order.
                   </p>
                 </div>
               ) : (
